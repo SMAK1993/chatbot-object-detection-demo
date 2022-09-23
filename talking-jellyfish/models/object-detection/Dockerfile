@@ -1,7 +1,5 @@
-FROM python:3.7-slim
+FROM python:3.10-slim
 WORKDIR /app
-
-RUN wget https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-rsb-weights/resnet50_a1_0-14fe96d1.pth -P /app/cache
 
 RUN pip install --upgrade pip
 
@@ -24,4 +22,4 @@ ENV SERVICE_TYPE MODEL
 # Changing folder to default user
 RUN chown -R 8888 /app
 
-CMD exec seldon-core-microservice $MODEL_NAME --service-type $SERVICE_TYPE
+CMD exec seldon-core-microservice $MODEL_NAME --service-type $SERVICE_TYPE --debug

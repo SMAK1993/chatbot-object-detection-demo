@@ -7,4 +7,10 @@ Working with microphone:
 1. Prepare instance with GPU and install GPUs (check using pytorch or
    tensorflow)
 2. Install Microk8s and Kubeflow - https://charmed-kubeflow.io/docs/quickstart using the bundle.yaml file.
-3. 
+
+
+## Demo setup
+
+### Object detection model
+
+Go to the obj
