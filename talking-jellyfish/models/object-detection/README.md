@@ -2,7 +2,8 @@
 
 # TODO
 
-- GPU support for inference (change base image to cuda)
+- add GPU support for inference (change base image to cuda)
+- Remove run as root
 
 ## Instruction
 
@@ -48,8 +49,10 @@ spec:
 END
 ```
 
-4. Adjust the model endpoint and image url in the `sample-request.py`. Run
-   python script. Expected result for default image:
+## Invoke model
+
+Adjust the model endpoint and image url in the `sample-request.py`. Run
+python script. Expected result for default image:
 
 ```
 Result code 200
@@ -62,6 +65,8 @@ Detected cat with confidence 0.999 at location [345.4, 23.85, 640.37, 368.72]
 
 ```
 
-## Invoke model
-
 ## Swagger
+
+Go to the URL of deployed model with suffix `/api/v0.1/doc/`.
+If you port-forward to pods directly, then select service/pod with 8000 port
+open. 
