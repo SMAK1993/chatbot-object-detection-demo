@@ -34,11 +34,11 @@ spec:
           imagePullPolicy: Always
           resources:
             requests:
-              memory: "2Gi"
-              cpu: "1"
+              memory: "1Gi"
+              cpu: "500Mi"
             limits:
               memory: "4Gi"
-              cpu: "4"
+              cpu: "1"
           securityContext:
             allowPrivilegeEscalation: false
             runAsUser: 0
