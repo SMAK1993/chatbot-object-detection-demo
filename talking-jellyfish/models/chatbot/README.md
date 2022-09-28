@@ -32,13 +32,6 @@ spec:
         - name: classifier
           image: bponieckiklotz/jellyfish.chatbot:dev
           imagePullPolicy: Always
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "500m"
-            limits:
-              memory: "4Gi"
-              cpu: "1"
           securityContext:
             allowPrivilegeEscalation: false
             runAsUser: 0
@@ -52,11 +45,7 @@ END
 ## Invoke model
 
 Adjust the model endpoint and image url in the `sample-request.py`. Run
-python script. Expected result for default image:
-
-```
-
-```
+python script.
 
 ## Swagger
 

@@ -18,15 +18,15 @@ while True:
     frame = cv.resize(frame, (800, 600))
 
     # using a greyscale picture, also for faster detection
-    # gray = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
+    gray = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
 
-    # boxes, weights = hog.detectMultiScale(frame, winStride=(4, 4))
+    boxes, weights = hog.detectMultiScale(frame, winStride=(4, 4))
     #
-    # boxes = np.array([[x, y, x + w, y + h] for (x, y, w, h) in boxes])
+    boxes = np.array([[x, y, x + w, y + h] for (x, y, w, h) in boxes])
     #
-    # for (xA, yA, xB, yB) in boxes:
-    #     # display the detected boxes in the colour picture
-    #     cv.rectangle(frame, (xA, yA), (xB, yB), (0, 255, 0), 2)
+    for (xA, yA, xB, yB) in boxes:
+        # display the detected boxes in the colour picture
+        cv.rectangle(frame, (xA, yA), (xB, yB), (0, 255, 0), 2)
 
     # Display the resulting frame
     cv.imshow('frame', frame)

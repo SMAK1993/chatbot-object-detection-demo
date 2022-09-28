@@ -1,3 +1,5 @@
+import time
+
 import requests
 import numpy as np
 import json
@@ -16,9 +18,12 @@ body = {
     }
 }
 
-MODEL_ENDPOINT = "http://10.1.100.31:9000/api/v0.1/predictions"
+MODEL_ENDPOINT = "http://10.152.183.182:8000/api/v0.1/predictions"
 
+start=time.time()
 results = requests.post(MODEL_ENDPOINT, json=body)
+print(f"Request time: {time.time()-start}")
+
 print(f"Result code {results.status_code}")
 res = json.loads(results.text)
 
@@ -34,8 +39,10 @@ for r in res['data']['ndarray']:
 #     feature_extractor_path="./build/",
 #     model_path="./build/"
 # )
+# # res = model.predict(image_list, [])
+# start=time.time()
 # res = model.predict(image_list, [])
-# res = model.predict(np.asarray(cat_image).tolist(), [])
+# print(f"Request time: {time.time()-start}")
 #
 # for r in res:
 #     if r['score'] > 0.9:

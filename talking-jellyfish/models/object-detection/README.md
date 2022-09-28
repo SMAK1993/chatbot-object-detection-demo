@@ -32,13 +32,6 @@ spec:
         - name: classifier
           image: bponieckiklotz/jellyfish.object-detection:dev
           imagePullPolicy: Always
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "500m"
-            limits:
-              memory: "4Gi"
-              cpu: "1"
           securityContext:
             allowPrivilegeEscalation: false
             runAsUser: 0
