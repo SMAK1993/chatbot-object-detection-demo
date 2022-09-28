@@ -3,7 +3,7 @@ from Chatbot import Chatbot
 
 def chatbox_over_http(text):
     import requests
-    MODEL_ENDPOINT = "http://10.1.100.53:9000/"
+    MODEL_ENDPOINT = "http://10.152.183.11:8000"
     body = {
         "data": {
             "ndarray": text

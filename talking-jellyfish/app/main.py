@@ -1,11 +1,12 @@
 import json
-import time
+from enum import Enum
 
 import cv2 as cv
 import numpy as np
 import requests
 
 OBJECT_DETECTION_ENDPOINT = "http://10.152.183.182:8000/api/v0.1/predictions"
+CHATBOT_ENDPOINT = "http://10.152.183.11:8000/api/v0.1/predictions"
 
 
 def detect_humans(img):
@@ -23,56 +24,70 @@ def detect_humans(img):
             print(
                 f"Detected {r['label']} with confidence {round(r['score'], 3)} at location {r['box']}"
             )
-    return [r['box'] for r in res['data']['ndarray'] if r['score'] > 0.9]
+
+    return [r['box'] for r in res['data']['ndarray'] if
+            (r['score'] > 0.9 and r['label'] == "person")]
 
 
+def chatbot(text):
+    body = {
+        "data": {
+            "ndarray": text
+        }
+    }
+    response = requests.post(CHATBOT_ENDPOINT, json=body)
+    print(response.status_code, response.content)
+    return json.loads(response.content)["strData"]
 
-# CHATBOT_ENDPOINT = ""
-# def chatbot():
-#     pass
+
+def print_boxes(canvas, boxes, color=(0, 255, 0)):
+    for (xA, yA, xB, yB) in boxes:
+        cv.rectangle(canvas, (int(xA), int(yA)), (int(xB), int(yB)), color, 2)
+
+
+class JellyfishMode(Enum):
+    WAIT = 1
+    ATTRACT = 2
+    TALK = 3
+
+
+class CameraOperation:
+
+    def __enter__(self):
+        cv.startWindowThread()
+        self.cap = cv.VideoCapture(0)
+        if not self.cap.isOpened():
+            raise Exception("Cannot open camera")
+        return self.cap
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.cap.release()
+        cv.destroyAllWindows()
+        cv.waitKey(1)
 
 
 if __name__ == '__main__':
 
-    cv.startWindowThread()
+    with CameraOperation() as cap:
+        mode = JellyfishMode.WAIT
 
-    cap = cv.VideoCapture(0)
-    if not cap.isOpened():
-        print("Cannot open camera")
-        exit()
+        while True:
+            # Capture frame-by-frame
+            ret, frame = cap.read()
 
-    # while True:
-    for i in range(1000):
-        print(f"Interation {i}")
-        # Capture frame-by-frame
-        ret, frame = cap.read()
+            frame = cv.resize(frame, (800, 600))
 
-        frame = cv.resize(frame, (800, 600))
+            res = detect_humans(frame)
+            print_boxes(frame, res)
+            cv.imshow('frame', frame)
 
-        # using a greyscale picture, also for faster detection
-        gray = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
+            if len(res) > 0:
+                mode = JellyfishMode.TALK
 
-        # start = time.time()
-        res = detect_humans(frame)
-        # print(f"Detect human: {time.time()-start}")
+            if mode == JellyfishMode.TALK:
+                user_input = input(">> User:")
+                bot_response = chatbot(user_input)
+                print(bot_response)
 
-        # boxes, weights = hog.detectMultiScale(frame, winStride=(4, 4))
-        # #
-        # boxes = np.array([[x, y, x + w, y + h] for (x, y, w, h) in boxes])
-        # #
-        # TODO
-        for (xA, yA, xB, yB) in res:
-            # display the detected boxes in the colour picture
-            cv.rectangle(frame, (int(xA), int(yA)), (int(xB), int(yB)), (0, 255, 0), 2)
-        #
-        # # Display the resulting frame
-
-        cv.imshow('frame', frame)
-        if cv.waitKey(1) & 0xFF == ord('q'):
-            break
-
-    # When everything done, release the capture
-    cap.release()
-
-    cv.destroyAllWindows()
-    cv.waitKey(1)
+            if cv.waitKey(1) & 0xFF == ord('q'):
+                break
