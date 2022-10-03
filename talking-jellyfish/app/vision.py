@@ -1,12 +1,10 @@
 import json
-from enum import Enum
 
 import cv2 as cv
 import numpy as np
 import requests
 
-OBJECT_DETECTION_ENDPOINT = "http://10.152.183.182:8000/api/v0.1/predictions"
-CHATBOT_ENDPOINT = "http://10.152.183.11:8000/api/v0.1/predictions"
+from config import SyncConfig
 
 
 def detect_humans(img):
@@ -29,26 +27,9 @@ def detect_humans(img):
             (r['score'] > 0.9 and r['label'] == "person")]
 
 
-def chatbot(text):
-    body = {
-        "data": {
-            "ndarray": text
-        }
-    }
-    response = requests.post(CHATBOT_ENDPOINT, json=body)
-    print(response.status_code, response.content)
-    return json.loads(response.content)["strData"]
-
-
 def print_boxes(canvas, boxes, color=(0, 255, 0)):
     for (xA, yA, xB, yB) in boxes:
         cv.rectangle(canvas, (int(xA), int(yA)), (int(xB), int(yB)), color, 2)
-
-
-class JellyfishMode(Enum):
-    WAIT = 1
-    ATTRACT = 2
-    TALK = 3
 
 
 class CameraOperation:
@@ -66,12 +47,15 @@ class CameraOperation:
         cv.waitKey(1)
 
 
+OBJECT_DETECTION_ENDPOINT = "http://10.152.183.182:8000/api/v0.1/predictions"
+
 if __name__ == '__main__':
 
-    with CameraOperation() as cap:
-        mode = JellyfishMode.WAIT
+    config = SyncConfig("/tmp/jellyfish-sync.conf")
 
+    with CameraOperation() as cap:
         while True:
+            config.load_config()
             # Capture frame-by-frame
             ret, frame = cap.read()
 
@@ -81,13 +65,9 @@ if __name__ == '__main__':
             print_boxes(frame, res)
             cv.imshow('frame', frame)
 
-            if len(res) > 0:
-                mode = JellyfishMode.TALK
-
-            if mode == JellyfishMode.TALK:
-                user_input = input(">> User:")
-                bot_response = chatbot(user_input)
-                print(bot_response)
+            # if not apps_config.get("chat_enabled") and not apps_config.get(
+            if not config.chat and not config.cv and len(res) > 0:
+                config.save_config(cv=True, chat=False)
 
             if cv.waitKey(1) & 0xFF == ord('q'):
                 break
