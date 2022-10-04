@@ -45,6 +45,7 @@ if __name__ == '__main__':
     speech_synthesizer = AzureSpeechSynthesizer(SPEECH_KEY, SPEECH_REGION)
 
     config = SyncConfig("/tmp/jellyfish-sync.conf")
+    config.save_config(cv=False, chat=False)
 
     result_text = None
     while result_text != "Execute order 66.":

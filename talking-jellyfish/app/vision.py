@@ -1,4 +1,5 @@
 import json
+import os
 
 import cv2 as cv
 import numpy as np
@@ -47,10 +48,9 @@ class CameraOperation:
         cv.waitKey(1)
 
 
-OBJECT_DETECTION_ENDPOINT = "http://10.152.183.182:8000/api/v0.1/predictions"
-
 if __name__ == '__main__':
 
+    OBJECT_DETECTION_ENDPOINT = os.getenv("OBJECT_DETECTION_ENDPOINT")
     config = SyncConfig("/tmp/jellyfish-sync.conf")
 
     with CameraOperation() as cap:
