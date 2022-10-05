@@ -35,12 +35,13 @@ Applications are implementing the semaphore pattern using the file (
 /tmp/jellyfish-sync.conf). This allows enabling and disabling the communication
 for chatbot based on the humans detected in front of it.
 
-## Instruction
+## Environment setup
 
 1. Prepare instance with GPU and install GPUs (check using pytorch or
    tensorflow)
 2. Install Microk8s and Kubeflow - https://charmed-kubeflow.io/docs/quickstart
    using the bundle.yaml file.
+3. Install python, pip (demo was developed using Python 3.10)
 
 ## Demo setup
 
@@ -78,8 +79,12 @@ export AZURE_SPEECH_KEY=xxx
 export AZURE_SPEECH_REGION=xxx
 ```
 
-Run the applications using python in separated commandlines:
+Create the virtual environment using requirements file from app folder.
+
+Run the applications using python in separated commandlines in order:
 
 - `python chatbot.py`
 - `python vision.py`
 
+In case of application getting stuck remove the config
+file `/tmp/jellyfish-sync.conf` and restart the applications.

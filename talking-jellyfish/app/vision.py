@@ -9,7 +9,7 @@ import requests
 from config import SyncConfig
 
 logging.basicConfig(level=logging.INFO)
-log = logging.getLogger("VisionLogger")
+log = logging.getLogger("VisionApp")
 
 
 def detect_humans(img):

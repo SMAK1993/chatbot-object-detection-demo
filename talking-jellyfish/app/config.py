@@ -1,5 +1,9 @@
 import json
 
+import logging
+
+log = logging.getLogger("SyncConfig")
+
 
 class SyncConfig:
     def __init__(self, filename):
