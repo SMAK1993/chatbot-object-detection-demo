@@ -21,3 +21,6 @@ class SyncConfig:
                 "cv_enabled": cv,
                 "chat_enabled": chat
             }))
+
+    def __str__(self):
+        return f"{{cv={self.cv}, chat={self.chat}}}"

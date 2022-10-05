@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 
 import cv2 as cv
@@ -6,6 +7,9 @@ import numpy as np
 import requests
 
 from config import SyncConfig
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger("VisionLogger")
 
 
 def detect_humans(img):
@@ -15,12 +19,13 @@ def detect_humans(img):
         }
     }
     results = requests.post(OBJECT_DETECTION_ENDPOINT, json=body)
-    print(f"Result code {results.status_code}")
+    log.debug(
+        f"Object detection endpoint call result code {results.status_code}")
     res = json.loads(results.text)
 
     for r in res['data']['ndarray']:
         if r['score'] > 0.9:
-            print(
+            log.debug(
                 f"Detected {r['label']} with confidence {round(r['score'], 3)} at location {r['box']}"
             )
 
@@ -56,18 +61,27 @@ if __name__ == '__main__':
     with CameraOperation() as cap:
         while True:
             config.load_config()
+            log.debug("Sync config loaded.")
             # Capture frame-by-frame
+
             ret, frame = cap.read()
+            log.info("Frame captured")
 
             frame = cv.resize(frame, (800, 600))
+            log.debug("Frame resized")
 
-            res = detect_humans(frame)
-            print_boxes(frame, res)
+            humans = detect_humans(frame)
+            log.info(f"Number of humans detected: {len(humans)}")
+
+            print_boxes(frame, humans)
+            log.debug("Boxes printed on the frame.")
+
             cv.imshow('frame', frame)
+            log.debug("Frame updated in the Window")
 
-            # if not apps_config.get("chat_enabled") and not apps_config.get(
-            if not config.chat and not config.cv and len(res) > 0:
+            if not config.chat and not config.cv and len(humans) > 0:
                 config.save_config(cv=True, chat=False)
+                log.info(f"Update the sync config to {config}")
 
             if cv.waitKey(1) & 0xFF == ord('q'):
                 break
