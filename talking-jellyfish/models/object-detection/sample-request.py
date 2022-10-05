@@ -6,7 +6,7 @@ import json
 
 from PIL import Image
 
-from MyModel import MyModel
+from MyModel import ObjectDetection
 
 url = "http://images.cocodataset.org/val2017/000000039769.jpg"
 cat_image = Image.open(requests.get(url, stream=True).raw)

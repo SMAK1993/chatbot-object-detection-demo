@@ -16,7 +16,7 @@ EXPOSE 5000
 EXPOSE 9000
 
 # Define environment variables
-ENV MODEL_NAME MyModel
+ENV MODEL_NAME ObjectDetection
 ENV SERVICE_TYPE MODEL
 
 # Changing folder to default user

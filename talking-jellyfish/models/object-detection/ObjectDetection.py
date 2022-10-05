@@ -1,14 +1,15 @@
-import numpy as np
-from transformers import DetrFeatureExtractor, DetrForObjectDetection
-import torch
-import PIL
-from pathlib import Path
 import logging
+from pathlib import Path
+
+import PIL
+import numpy as np
+import torch
+from transformers import DetrFeatureExtractor, DetrForObjectDetection
 
 MODEL_DIR = "/app/build/"
 
 
-class MyModel(object):
+class ObjectDetection(object):
 
     def __init__(self,
                  feature_extractor_path=MODEL_DIR,
@@ -30,16 +31,16 @@ class MyModel(object):
         X : array-like
         feature_names : array of feature names (optional)
         """
-        self.log.info(f"Predict invoked!")
+        self.log.info(f"Detection on new image invoked.")
         image = PIL.Image.fromarray(np.asarray(X, np.uint8), mode="RGB")
 
-        self.log.info(f"Image converted")
+        self.log.debug(f"Image converted")
         inputs = self.feature_extractor(images=image, return_tensors="pt")
-        self.log.info(f"Features extracted")
+        self.log.debug(f"Features extracted")
         outputs = self.model(**inputs)
 
         # convert outputs (bounding boxes and class logits) to COCO API
-        self.log.info("Convert results")
+        self.log.debug("Convert results")
         target_sizes = torch.tensor([image.size[::-1]])
         results = self.feature_extractor.post_process(
             outputs,
