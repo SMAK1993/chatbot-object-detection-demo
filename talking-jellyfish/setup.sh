@@ -9,6 +9,9 @@ mkdir -p ~/.kube
 microk8s config > ~/.kube/config
 sudo chown -f -R $USER ~/.kube
 
+microk8s enable gpu
+microk8s enable registry:size=40Gi
+
 microk8s enable dns storage ingress metallb:10.64.140.43-10.64.140.49
 microk8s status --wait-ready
 
