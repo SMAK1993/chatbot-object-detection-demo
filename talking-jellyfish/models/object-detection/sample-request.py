@@ -6,7 +6,7 @@ import json
 
 from PIL import Image
 
-from MyModel import ObjectDetection
+from ObjectDetection import ObjectDetection
 
 url = "http://images.cocodataset.org/val2017/000000039769.jpg"
 cat_image = Image.open(requests.get(url, stream=True).raw)
@@ -18,7 +18,7 @@ body = {
     }
 }
 
-MODEL_ENDPOINT = "http://10.152.183.182:8000/api/v0.1/predictions"
+MODEL_ENDPOINT = "http://10.1.110.162:9000/api/v0.1/predictions"
 
 start=time.time()
 results = requests.post(MODEL_ENDPOINT, json=body)
@@ -35,7 +35,7 @@ for r in res['data']['ndarray']:
         )
 
 # Local model execution
-# model = MyModel(
+# model = ObjectDetection(
 #     feature_extractor_path="./build/",
 #     model_path="./build/"
 # )

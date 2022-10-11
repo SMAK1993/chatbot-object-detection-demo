@@ -76,7 +76,8 @@ class ObjectDetection(object):
         # convert outputs (bounding boxes and class logits) to COCO API
         self.log.debug("Convert results")
         target_sizes = torch.tensor([image.size[::-1]])
-        results = post_process(outputs, target_sizes=target_sizes)[0]
+        results = post_process(outputs, target_sizes=target_sizes,
+                               torch_device=self.torch_device)[0]
 
         output = []
         for score, label, box in zip(results["scores"], results["labels"],

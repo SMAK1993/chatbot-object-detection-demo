@@ -2,7 +2,7 @@ FROM nvcr.io/nvidia/cuda:11.7.1-devel-ubuntu20.04
 WORKDIR /app
 
 RUN apt update
-RUN apt install python3 python-is-python3
+RUN apt install python3 python-is-python3 pip -y
 
 RUN pip install --upgrade pip
 
