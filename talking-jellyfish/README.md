@@ -79,7 +79,7 @@ export AZURE_SPEECH_KEY=xxx
 export AZURE_SPEECH_REGION=xxx
 ```
 
-Create the virtual environment using requirements file from app folder.
+Create the virtual environment using requirements file from `app` folder.
 
 Run the applications using python in separated commandlines in order:
 

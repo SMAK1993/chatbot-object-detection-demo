@@ -30,7 +30,7 @@ spec:
     - spec:
         containers:
         - name: classifier
-          image: bponieckiklotz/jellyfish.object-detection@sha256:a2f22d44446b8e73d175e54d2dcb07fcdfec91e45b44dbffdeb6b86987d7c6d1
+          image: bponieckiklotz/jellyfish.object-detection@sha256:9be90c27cabbd0a69953b15936b26208858c5a12ce96d78e58d2d41841da130b
           imagePullPolicy: Always
           securityContext:
             allowPrivilegeEscalation: false

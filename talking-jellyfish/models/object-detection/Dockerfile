@@ -13,6 +13,9 @@ RUN pip install -r requirements.txt
 # Copy source code
 COPY . .
 
+RUN mkdir -p /home/root/.cache/torch/hub/checkpoints/
+RUN cp ./build/resnet50_a1_0-14fe96d1.pth /home/root/.cache/torch/hub/checkpoints/resnet50_a1_0-14fe96d1.pth
+
 # Port for GRPC
 EXPOSE 5000
 # Port for REST
