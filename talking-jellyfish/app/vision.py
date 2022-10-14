@@ -1,35 +1,37 @@
+import base64
 import json
 import logging
 import os
 
 import cv2 as cv
-import numpy as np
 import requests
+from PIL import Image
 
 from config import SyncConfig
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(message)s')
 log = logging.getLogger("VisionApp")
 
 
 def detect_humans(img):
-    body = {
-        "data": {
-            "ndarray": np.asarray(img).tolist()
-        }
+    files = {
+        "mode": img.mode,
+        "size": f"{img.size[0]}x{img.size[1]}",
+        "media": base64.b64encode(img.tobytes())
     }
-    results = requests.post(OBJECT_DETECTION_ENDPOINT, json=body)
+    log.debug(f"Files: mode={files['mode']} size={files['size']}")
+    results = requests.post(OBJECT_DETECTION_ENDPOINT, files=files)
     log.debug(
         f"Object detection endpoint call result code {results.status_code}")
     res = json.loads(results.text)
 
-    for r in res['data']['ndarray']:
+    for r in res:
         if r['score'] > 0.9:
             log.debug(
                 f"Detected {r['label']} with confidence {round(r['score'], 3)} at location {r['box']}"
             )
 
-    return [r['box'] for r in res['data']['ndarray'] if
+    return [r['box'] for r in res if
             (r['score'] > 0.9 and r['label'] == "person")]
 
 
@@ -70,7 +72,8 @@ if __name__ == '__main__':
             frame = cv.resize(frame, (800, 600))
             log.debug("Frame resized")
 
-            humans = detect_humans(frame)
+            frame_image = Image.fromarray(frame)
+            humans = detect_humans(frame_image)
             log.info(f"Number of humans detected: {len(humans)}")
 
             print_boxes(frame, humans)

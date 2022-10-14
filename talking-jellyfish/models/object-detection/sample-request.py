@@ -38,7 +38,7 @@ model = ObjectDetection(
     feature_extractor_path="./build/",
     model_path="./build/"
 )
-# res = model.predict(image_list, [])
+
 start=time.time()
 res = model.predict_raw(files)
 print(f"Request time: {time.time()-start}")
