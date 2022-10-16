@@ -42,11 +42,14 @@ def print_boxes(canvas, boxes, color=(0, 255, 0)):
 
 class CameraOperation:
 
+    def __init__(self, camera_id):
+        self.camera_id = camera_id
+
     def __enter__(self):
         cv.startWindowThread()
-        self.cap = cv.VideoCapture(0)
+        self.cap = cv.VideoCapture(self.camera_id)
         if not self.cap.isOpened():
-            raise Exception("Cannot open camera")
+            raise Exception(f"Cannot open camera with id: {self.camera_id}")
         return self.cap
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -58,13 +61,16 @@ class CameraOperation:
 if __name__ == '__main__':
 
     OBJECT_DETECTION_ENDPOINT = os.getenv("OBJECT_DETECTION_ENDPOINT")
-    config = SyncConfig("/tmp/jellyfish-sync.conf")
+    CONFIG_FILE = os.getenv("JELLYFISH_CONFIG_SYNC_FILENAME",
+                            "/tmp/jellyfish-sync.conf")
+    config = SyncConfig(CONFIG_FILE)
+    selected_camera = os.getenv("VISION_USE_CAMERA_ID", 0)
 
-    with CameraOperation() as cap:
+    with CameraOperation(selected_camera) as cap:
         while True:
+            # Capture frame-by-frame
             config.load_config()
             log.debug("Sync config loaded.")
-            # Capture frame-by-frame
 
             ret, frame = cap.read()
             log.info("Frame captured")
@@ -79,7 +85,7 @@ if __name__ == '__main__':
             print_boxes(frame, humans)
             log.debug("Boxes printed on the frame.")
 
-            cv.imshow('frame', frame)
+            cv.imshow('Jellyfish view', frame)
             log.debug("Frame updated in the Window")
 
             if not config.chat and not config.cv and len(humans) > 0:

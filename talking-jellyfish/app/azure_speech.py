@@ -7,14 +7,18 @@ log = logging.getLogger("Chatbot")
 
 class AzureSpeechRecognition:
 
-    def __init__(self, speech_key, speech_region, language='en-US'):
+    def __init__(self, speech_key, speech_region, language='en-US',
+                 use_default_microphone=True, device_name=None):
         speech_config = speechsdk.SpeechConfig(
             subscription=speech_key,
             region=speech_region,
             speech_recognition_language=language)
 
-        audio_config = speechsdk.audio.AudioConfig(
-            use_default_microphone=True)
+        if use_default_microphone:
+            audio_config = speechsdk.audio.AudioConfig(
+                use_default_microphone=use_default_microphone)
+        else:
+            audio_config = speechsdk.audio.AudioConfig(device_name=device_name)
 
         self.speech_recognizer = speechsdk.SpeechRecognizer(
             speech_config=speech_config,
@@ -34,7 +38,7 @@ class AzureSpeechRecognition:
                       result_message.no_match_details)
         elif result_message.reason == speechsdk.ResultReason.Canceled:
             cancellation_details = result_message.cancellation_details
-            log.warn(
+            log.warning(
                 f"Speech Recognition canceled: {cancellation_details.reason}")
             if cancellation_details.reason == speechsdk.CancellationReason.Error:
                 log.error("Error details: {}".format(
@@ -44,14 +48,19 @@ class AzureSpeechRecognition:
 
 class AzureSpeechSynthesizer:
     def __init__(self, speech_key, speech_region,
-                 voice_name='en-US-JennyNeural'):
+                 voice_name='en-US-JennyNeural', use_default_speaker=True,
+                 device_name=None):
         speech_config = speechsdk.SpeechConfig(
             subscription=speech_key,
             region=speech_region)
         speech_config.speech_synthesis_voice_name = voice_name
 
-        audio_config = speechsdk.audio.AudioOutputConfig(
-            use_default_speaker=True)
+        if use_default_speaker:
+            audio_config = speechsdk.audio.AudioOutputConfig(
+                use_default_speaker=use_default_speaker)
+        else:
+            audio_config = speechsdk.audio.AudioOutputConfig(
+                device_name=device_name)
 
         self.speech_synthesizer = speechsdk.SpeechSynthesizer(
             speech_config=speech_config,

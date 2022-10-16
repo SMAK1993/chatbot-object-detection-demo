@@ -35,7 +35,7 @@ Applications are implementing the semaphore pattern using the file (
 /tmp/jellyfish-sync.conf). This allows enabling and disabling the communication
 for chatbot based on the humans detected in front of it.
 
-## Environment setup
+## Environment
 
 1. Prepare instance with GPU and install GPUs (check using pytorch or
    tensorflow)
@@ -43,9 +43,7 @@ for chatbot based on the humans detected in front of it.
    using the bundle.yaml file.
 3. Install python, pip (demo was developed using Python 3.10)
 
-## Demo setup
-
-### Models
+## Models
 
 Build, upload and deploy models based on the `README.md` files for:
 
@@ -67,24 +65,79 @@ export CHATBOT_ENDPOINT=http://10.152.183.11:8000/api/v0.1/predictions
 export OBJECT_DETECTION_ENDPOINT=http://10.152.183.182:8000/api/v0.1/predictions
 ```
 
-### Applications
+## Applications
 
-#### Prerequisite
+Create the virtual environment using requirements file from `app` folder.
+
+If you want to change the default place of storage for sync config
+file (`/tmp/jellyfish-sync.conf`) change it using the environment variable:
+
+```shell
+export JELLYFISH_CONFIG_SYNC_FILENAME=/tmp/jellyfish-sync.conf
+```
+
+This variable is required for the Windows environments.
+
+In case of application getting stuck remove the config file and restart the
+applications.
+
+#### Chatbot
 
 Create new Azure Speech object and get its key, region.
-Setup the environment variables:
+Set the environment variables:
 
 ```shell
 export AZURE_SPEECH_KEY=xxx
 export AZURE_SPEECH_REGION=xxx
 ```
 
-Create the virtual environment using requirements file from `app` folder.
+Set the model endpoint URL (if you have not done it in the Model section):
 
-Run the applications using python in separated commandlines in order:
+```shell
+export CHATBOT_ENDPOINT=http://10.152.183.11:8000/api/v0.1/predictions
+```
 
-- `python chatbot.py`
-- `python vision.py`
+Application by without environment properties uses default microphone and
+speaker. This can be changed using environment properties.
 
-In case of application getting stuck remove the config
-file `/tmp/jellyfish-sync.conf` and restart the applications.
+```shell
+export CHATBOT_USE_DEFAULT_MICROPHONE=False
+export CHATBOT_MICROPHONE_DEVICE_NAME=xxx
+
+export CHATBOT_USE_DEFAULT_SPEAKER=False
+exprot CHATBOT_SPEAKER_DEVICE_NAME=xxx
+```
+
+Run application:
+
+```shell
+python chatbot.py
+```
+
+#### Vision
+
+First time OpenCV installation requires a bit of additional configuration. You
+need libraries when installing it:
+
+```shell
+sudo apt install libopencv-dev python3-opencv
+```
+
+Export the model endpoint:
+
+```shell
+export OBJECT_DETECTION_ENDPOINT=http://10.152.183.182:8000/api/v0.1/predictions
+```
+
+The vision application is using the camera with ID 0 and default. You can change
+it using environment properties:
+
+```shell
+export VISION_USE_CAMERA_ID=0
+```
+
+Run application:
+
+```shell
+python vision.py
+```
