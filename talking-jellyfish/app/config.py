@@ -12,10 +12,14 @@ class SyncConfig:
         self.filename = filename
 
     def load_config(self):
-        with open(self.filename, 'r') as f:
-            config = json.loads(f.read())
-            self.cv = config.get('cv_enabled')
-            self.chat = config.get('chat_enabled')
+        try:
+            with open(self.filename, 'r') as f:
+                config = json.loads(f.read())
+                self.cv = config.get('cv_enabled')
+                self.chat = config.get('chat_enabled')
+        except FileNotFoundError as fnfe:
+            log.info("File not found. Creating from existing values.")
+            self.save_config(cv=self.cv, chat=self.chat)
 
     def save_config(self, cv, chat):
         self.cv = cv

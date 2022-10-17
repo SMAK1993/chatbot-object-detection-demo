@@ -2,7 +2,7 @@ FROM nvcr.io/nvidia/cuda:11.7.1-devel-ubuntu20.04
 WORKDIR /app
 
 RUN apt update
-RUN apt install python3 python-is-python3
+RUN apt install python3 python-is-python3 pip -y
 
 RUN pip install --upgrade pip
 
@@ -12,6 +12,9 @@ RUN pip install -r requirements.txt
 
 # Copy source code
 COPY . .
+
+RUN mkdir -p /home/root/.cache/torch/hub/checkpoints/
+RUN cp ./build/resnet50_a1_0-14fe96d1.pth /home/root/.cache/torch/hub/checkpoints/resnet50_a1_0-14fe96d1.pth
 
 # Port for GRPC
 EXPOSE 5000

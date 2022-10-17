@@ -30,11 +30,14 @@ spec:
     - spec:
         containers:
         - name: classifier
-          image: bponieckiklotz/jellyfish.object-detection:dev
+          image: bponieckiklotz/jellyfish.object-detection@sha256:9be90c27cabbd0a69953b15936b26208858c5a12ce96d78e58d2d41841da130b
           imagePullPolicy: Always
           securityContext:
             allowPrivilegeEscalation: false
             runAsUser: 0
+          resources:
+            limits:
+              nvidia.com/gpu: 1
     graph:
       name: classifier
     name: default

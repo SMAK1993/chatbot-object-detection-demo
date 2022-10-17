@@ -1,3 +1,4 @@
+import base64
 import logging
 from pathlib import Path
 
@@ -48,26 +49,23 @@ class ObjectDetection(object):
         print("Initializing")
         self.torch_device = "cuda:0" if torch.cuda.is_available() else "cpu"
         self.feature_extractor = DetrFeatureExtractor.from_pretrained(
-            Path(feature_extractor_path))
+            Path(feature_extractor_path), cache_dir=MODEL_DIR)
         self.model = DetrForObjectDetection.from_pretrained(Path(model_path),
                                                             cache_dir=MODEL_DIR)
         self.model = self.model.to(self.torch_device)
         self.log = logging.getLogger()
         self.log.info(f"Initialized for device: {self.torch_device}")
 
-    def predict(self, X, features_names):
-        """
-        Return a prediction.
-        Parameters
-        ----------
-        X : array-like
-        feature_names : array of feature names (optional)
-        """
-        self.log.info(f"Detection on new image invoked.")
-        image = PIL.Image.fromarray(np.asarray(X, np.uint8), mode="RGB")
-        image.convert("L")
+    def predict_raw(self, msg):
+        self.log.info(f"Predict Raw invoked!")
 
-        self.log.debug(f"Image converted")
+        size = tuple([int(s) for s in msg['size'].split("x")])
+        mode = msg['mode']
+        image_bytes = base64.b64decode(msg['media'])
+
+        image = PIL.Image.frombytes(mode, size, image_bytes)
+
+        self.log.debug(f"Image from bytes created")
         inputs = self.feature_extractor(images=image, return_tensors="pt")
         inputs = inputs.to(self.torch_device)
         self.log.debug(f"Features extracted")
@@ -76,7 +74,8 @@ class ObjectDetection(object):
         # convert outputs (bounding boxes and class logits) to COCO API
         self.log.debug("Convert results")
         target_sizes = torch.tensor([image.size[::-1]])
-        results = post_process(outputs, target_sizes=target_sizes)[0]
+        results = post_process(outputs, target_sizes=target_sizes,
+                               torch_device=self.torch_device)[0]
 
         output = []
         for score, label, box in zip(results["scores"], results["labels"],

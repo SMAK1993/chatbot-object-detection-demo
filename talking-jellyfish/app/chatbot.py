@@ -23,21 +23,37 @@ def chatbot(text):
     return json.loads(response.content)["strData"]
 
 
+def init_speech_services():
+    speech_key = os.getenv("AZURE_SPEECH_KEY")
+    speech_region = os.getenv("AZURE_SPEECH_REGION")
+    log.debug("Environment properties set")
+    use_default_microphone = os.getenv("CHATBOT_USE_DEFAULT_MICROPHONE", True)
+    microphone_device_name = os.getenv("CHATBOT_MICROPHONE_DEVICE_NAME", None)
+    recognition = AzureSpeechRecognition(speech_key, speech_region,
+                                         use_default_microphone,
+                                         microphone_device_name)
+    log.debug("Speech recognition API set")
+
+    use_default_speaker = os.getenv("CHATBOT_USE_DEFAULT_SPEAKER", True)
+    speaker_device_name = os.getenv("CHATBOT_SPEAKER_DEVICE_NAME", None)
+    synthesizer = AzureSpeechSynthesizer(speech_key, speech_region,
+                                         use_default_speaker,
+                                         speaker_device_name)
+    log.debug("Speech synthesizer API set")
+    return recognition, synthesizer
+
+
 if __name__ == '__main__':
 
-    SPEECH_KEY = os.getenv("AZURE_SPEECH_KEY")
-    SPEECH_REGION = os.getenv("AZURE_SPEECH_REGION")
-    CHATBOT_ENDPOINT = os.getenv("CHATBOT_ENDPOINT")
-    log.debug("Environment properties set")
-
-    speech_recognition = AzureSpeechRecognition(SPEECH_KEY, SPEECH_REGION)
-    log.debug("Speech recognition API set")
-    speech_synthesizer = AzureSpeechSynthesizer(SPEECH_KEY, SPEECH_REGION)
-    log.debug("Speech synthesizer API set")
-
-    config = SyncConfig("/tmp/jellyfish-sync.conf")
+    CONFIG_FILE = os.getenv("JELLYFISH_CONFIG_SYNC_FILENAME",
+                            "/tmp/jellyfish-sync.conf")
+    config = SyncConfig(CONFIG_FILE)
     config.save_config(cv=False, chat=False)
     log.info(f"SyncConfig file created with values: {config}")
+
+    CHATBOT_ENDPOINT = os.getenv("CHATBOT_ENDPOINT")
+
+    speech_recognition, speech_synthesizer = init_speech_services()
 
     result_text = None
     while result_text != "Execute order 66.":

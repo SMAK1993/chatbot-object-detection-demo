@@ -5,7 +5,6 @@ from torch import nn
 from transformers import DetrFeatureExtractor, DetrForObjectDetection
 from transformers.models.detr.feature_extraction_detr import \
     center_to_corners_format
-import cv2 as cv
 
 url = "http://images.cocodataset.org/val2017/000000039769.jpg"
 img = Image.open(requests.get(url, stream=True).raw)
