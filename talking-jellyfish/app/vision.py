@@ -27,6 +27,7 @@ def detect_humans(img):
     log.debug(
         f"Object detection endpoint call result code {results.status_code}")
     res = json.loads(results.text)
+
     for r in res:
         if r['score'] > 0.9:
             log.debug(
