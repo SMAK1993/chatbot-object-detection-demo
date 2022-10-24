@@ -30,15 +30,15 @@ def init_speech_services():
     use_default_microphone = os.getenv("CHATBOT_USE_DEFAULT_MICROPHONE", True)
     microphone_device_name = os.getenv("CHATBOT_MICROPHONE_DEVICE_NAME", None)
     recognition = AzureSpeechRecognition(speech_key, speech_region,
-                                         use_default_microphone,
-                                         microphone_device_name)
+                                         use_default_microphone=bool(use_default_microphone),
+                                         device_name=microphone_device_name)
     log.debug("Speech recognition API set")
 
     use_default_speaker = os.getenv("CHATBOT_USE_DEFAULT_SPEAKER", True)
     speaker_device_name = os.getenv("CHATBOT_SPEAKER_DEVICE_NAME", None)
     synthesizer = AzureSpeechSynthesizer(speech_key, speech_region,
-                                         use_default_speaker,
-                                         speaker_device_name)
+                                         use_default_speaker=bool(use_default_speaker),
+                                         device_name=speaker_device_name)
     log.debug("Speech synthesizer API set")
     return recognition, synthesizer
 

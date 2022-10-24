@@ -12,6 +12,9 @@ from config import SyncConfig
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(message)s')
 log = logging.getLogger("VisionApp")
 
+OBJECT_DETECTION_ENDPOINT = os.getenv("OBJECT_DETECTION_ENDPOINT")
+CONFIG_FILE = os.getenv("JELLYFISH_CONFIG_SYNC_FILENAME",
+                        "/tmp/jellyfish-sync.conf")
 
 def detect_humans(img):
     files = {
@@ -24,7 +27,6 @@ def detect_humans(img):
     log.debug(
         f"Object detection endpoint call result code {results.status_code}")
     res = json.loads(results.text)
-
     for r in res:
         if r['score'] > 0.9:
             log.debug(
@@ -60,13 +62,10 @@ class CameraOperation:
 
 if __name__ == '__main__':
 
-    OBJECT_DETECTION_ENDPOINT = os.getenv("OBJECT_DETECTION_ENDPOINT")
-    CONFIG_FILE = os.getenv("JELLYFISH_CONFIG_SYNC_FILENAME",
-                            "/tmp/jellyfish-sync.conf")
     config = SyncConfig(CONFIG_FILE)
     selected_camera = os.getenv("VISION_USE_CAMERA_ID", 0)
 
-    with CameraOperation(selected_camera) as cap:
+    with CameraOperation(int(selected_camera)) as cap:
         while True:
             # Capture frame-by-frame
             config.load_config()
